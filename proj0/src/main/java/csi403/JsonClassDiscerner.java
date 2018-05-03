@@ -7,7 +7,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
-import java.util.List; 
+import java.sql.SQLOutput;
+import java.util.List;
 import java.util.ArrayList;
 
 public class JsonClassDiscerner {
@@ -19,6 +20,7 @@ public class JsonClassDiscerner {
         ObjectMapper mapper = new ObjectMapper();
         // mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         ArrayList friendList = new ArrayList();
+        JsonSerializer serializer = new JsonSerializer();
         
         
         try { 
@@ -50,59 +52,73 @@ public class JsonClassDiscerner {
         		two = (String) inList.getInList().get(i).getFriends().get(1);
         		first = friendList.indexOf(inList.getInList().get(i).getFriends().get(0));
             	second = friendList.indexOf(inList.getInList().get(i).getFriends().get(1));
-            	System.out.println(inList.getInList().get(i).getFriends().get(1).toString());
             	obj.get(first).addFriend(two);
             	obj.get(second).addFriend(one);
         	}
+        	//test
+//			for(int i = 0; i < friendList.size();i++){
+//				System.out.println(obj.get(i).getName()+" has friends = "+obj.get(i).getFriendShip());
+//			}
         	
         	
         	
-        	List<OutList> outList = new ArrayList<OutList>();
+			OutList suggested = new OutList();
+        	List<List<String>> compare = new ArrayList<List<String>>();
+
         	for(int i = 0 ; i <  obj.size();i++){
         		for(int j =0;j<obj.get(i).getFriendShip().size();j++){
-        			String[] myArray= new String[2];
-        			myArray[0] = obj.get(i).getName();
-        			myArray[1] = obj.get(i).getFriendShip().get(j).toString();
-        		}
-        		
+
+        			String levelOne = obj.get(i).getFriendShip().get(j);
+        			int indexOfLevelOne = friendList.indexOf(levelOne);
+
+
+					for(int k =0; k< obj.get(indexOfLevelOne).friendShip.size();k++){
+						List<String> myString = new ArrayList<String>();
+						String f = obj.get(i).getName().toString();
+						myString.add(f);
+						String foaf = obj.get(indexOfLevelOne).friendShip.get(k).toString();
+						myString.add(foaf);
+
+						compare.add(myString);
+
+						boolean same = false;
+						same  = f.equals(foaf);
+
+						for(int x =0;x<compare.size();x++){
+							boolean check1, check2;
+							check1 = f.equals(compare.get(x).get(0)) && foaf.equals(compare.get(x).get(1));
+							check2 = f.equals(compare.get(x).get(1)) && foaf.equals(compare.get(x).get(0));
+							if(same == false ){
+								if(check2 == false && check1 == false){
+									suggested.setSuggested(myString);
+									break;
+								}
+
+							}
+						}
+
+//
+//						if(same == false)
+//							suggested.setSuggested(myString);
+					}
+				}
         	}
-        	
-        	
-        	
-        	
-//        	int first, second;
-//        	for(int i = 0; i < inList.getInList().size();i++){
-//            	first = friendList.indexOf(inList.getInList().get(i).getFriends().get(0));
-//            	second = friendList.indexOf(inList.getInList().get(i).getFriends().get(1));
-//            	System.out.println("first = "+first+" second =  "+ second);
-//            }
-//        	
-        	
-        	
-        	
-//        	
-//        	
-//            //Joining part
-//        	int n = friendList.size();
-//            DisjointUnionSets friends = new DisjointUnionSets(n);
-//            int first, second;
-//            for(int i = 0; i < inList.getInList().size();i++){
-//            	first = friendList.indexOf(inList.getInList().get(i).getFriends().get(0));
-//            	second = friendList.indexOf(inList.getInList().get(i).getFriends().get(1));
-//            	System.out.println("first = "+first+" second =  "+ second);
-//            	friends.union(first, second);
-//            }
-//            //friend check
-//            for(int x = 0; x<(n-1);x++){
-//            	for(int y = x+1;y<n;y++){
-//            		if(friends.find(x) == friends.find(y)){
-//            			System.out.println(friendList.get(x)+" is friend of "+ friendList.get(y));
-//            		}else System.out.println(friendList.get(x)+" is not a friend of "+ friendList.get(y));
-//            	}
-//            }
-//        	
-        	
-        	
+
+
+			System.out.println("--------------");
+        	for(int i =0; i< compare.size();i++){
+				System.out.println(compare.get(i).get(0)+"and"+ compare.get(i).get(1));
+
+			}
+
+
+			System.out.println(compare);
+
+
+			return serializer.serialize(suggested);
+
+
+
         	
             
         }
@@ -110,7 +126,7 @@ public class JsonClassDiscerner {
             return "{ \"message\" : \"Error - Malformed JSON\" } ";
         }
        
-        return "<unknown>"; 
+
     }
 
 
@@ -125,7 +141,7 @@ public class JsonClassDiscerner {
         System.out.println(msg);
         System.out.println(discerner.discern(msg));
         System.out.println("************************************");
-        msg = "{\"inList\":[{\"friends\":[\"Albert\", \"Betty\"]}, {\"friends\":[\"Betty\", \"Cathy\"]}, {\"friends\":[\"Cathy\", \"Tony\"]}, {\"friends\":[\"Tony\", \"Bruce\"]}]}";
+        msg = "{\"inList\":[{\"friends\":[\"Albert\", \"Betty\"]}, {\"friends\":[\"Betty\", \"Cathy\"]}, {\"friends\":[\"Cathy\", \"Denis\"]}, {\"friends\":[\"Denis\", \"Albert\"]}, {\"friends\":[\"Tony\", \"Bruce\"]}]}";
         System.out.println(msg);
         System.out.println(discerner.discern(msg));
         System.out.println("************************************");
