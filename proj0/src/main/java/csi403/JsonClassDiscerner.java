@@ -19,9 +19,8 @@ public class JsonClassDiscerner {
         ObjectMapper mapper = new ObjectMapper();
         // mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         ArrayList friendList = new ArrayList();
-    	List<Person> obj = new ArrayList<Person>();
-    	List<OutList> outList = new ArrayList<OutList>();
-    	JsonSerializer serializer = new JsonSerializer();
+        
+        
         try { 
         	InList inList = mapper.readValue(jsonStr, InList.class);
         	boolean check = false;
@@ -37,6 +36,7 @@ public class JsonClassDiscerner {
         	}
         	
         	System.out.println(friendList);
+        	List<Person> obj = new ArrayList<Person>();
         	for(int i = 0; i < friendList.size();i++){
         		Person info = new Person();
         		info.setName(friendList.get(i).toString());
@@ -54,29 +54,63 @@ public class JsonClassDiscerner {
             	obj.get(first).addFriend(two);
             	obj.get(second).addFriend(one);
         	}
-
         	
         	
         	
-        	//outlist function
+        	List<OutList> outList = new ArrayList<OutList>();
         	for(int i = 0 ; i <  obj.size();i++){
         		for(int j =0;j<obj.get(i).getFriendShip().size();j++){
         			String[] myArray= new String[2];
         			myArray[0] = obj.get(i).getName();
         			myArray[1] = obj.get(i).getFriendShip().get(j).toString();
-        			System.out.println(myArray.toString());
         		}
         		
         	}
-        	return serializer.serialize(outList); 
-
+        	
+        	
+        	
+        	
+//        	int first, second;
+//        	for(int i = 0; i < inList.getInList().size();i++){
+//            	first = friendList.indexOf(inList.getInList().get(i).getFriends().get(0));
+//            	second = friendList.indexOf(inList.getInList().get(i).getFriends().get(1));
+//            	System.out.println("first = "+first+" second =  "+ second);
+//            }
+//        	
+        	
+        	
+        	
+//        	
+//        	
+//            //Joining part
+//        	int n = friendList.size();
+//            DisjointUnionSets friends = new DisjointUnionSets(n);
+//            int first, second;
+//            for(int i = 0; i < inList.getInList().size();i++){
+//            	first = friendList.indexOf(inList.getInList().get(i).getFriends().get(0));
+//            	second = friendList.indexOf(inList.getInList().get(i).getFriends().get(1));
+//            	System.out.println("first = "+first+" second =  "+ second);
+//            	friends.union(first, second);
+//            }
+//            //friend check
+//            for(int x = 0; x<(n-1);x++){
+//            	for(int y = x+1;y<n;y++){
+//            		if(friends.find(x) == friends.find(y)){
+//            			System.out.println(friendList.get(x)+" is friend of "+ friendList.get(y));
+//            		}else System.out.println(friendList.get(x)+" is not a friend of "+ friendList.get(y));
+//            	}
+//            }
+//        	
+        	
+        	
+        	
+            
         }
         catch (Exception e) {
             return "{ \"message\" : \"Error - Malformed JSON\" } ";
         }
-    	
        
-        
+        return "<unknown>"; 
     }
 
 
